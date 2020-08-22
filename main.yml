@@ -1,0 +1,35 @@
+---                                                                        
+# tasks file for docker                                                    
+-  hosts: docker                                                           
+   gather_facts: false                                                     
+   tasks:                                                                  
+     - name: conf yum for docker                                           
+       yum_repository:                                                     
+         name: dockerrepo                                                  
+         baseurl: https://download.docker.com/linux/centos/7/x86_64/stable/
+         description: my docker repo for managed node                      
+         enabled: true                                                     
+         gpgcheck: no                                                      
+     - name: install docker software                                       
+       command: "yum install docker-ce -y --nobest"                        
+     - name: start docker service                                          
+       service:                                                            
+         name: "docker"                                                    
+         state: started                                                    
+         enabled: yes                                                      
+     - name: install software python36                                     
+       command: "yum install python36 -y"                                  
+     - name: install library                                               
+       command: "pip3 install docker-py"                                   
+     - name: Pull Web image                                                
+       docker_image:                                                       
+         name: nginx                                                       
+     - name: create container                                              
+       docker_container:                                                   
+         name: WebOS                                                       
+         image: nginx                                                      
+         state: started                                                    
+         ports:                                                            
+         - "1111:80"                                                       
+         tty: true                                                         
+         detach: true                                                      
